@@ -1,0 +1,206 @@
+Cache():
+val cacherdd = sc.parallelize(Array(1,2,3,4,5,6,7,8,9))
+val cacherddmapped = cacherdd.map(x => (x,"Code"))
+cacherddmapped.cache()
+
+check if rdd was cached
+scala> res24.getStorageLevel.useMemory
+res37: Boolean = true
+
+sc.parallelize(Array(1,2,3,1,2,3,2,2,2).map(x => (x,1)).countByValue()
+
+sc.parallelize(Array(1,2,3,1,2,3,2,2,2)).map(x => (x,1)).distinct().collect()
+
+sc.textFile("./README.md").filter(line => line.contains("Spark")).collect()
+
+val accum = sc.accumulator(0)
+sc.textFile("./README.md").filter(line => line.contains("Spark")).foreach(l => accum += l.length)
+accum
+
+import org.apache.spark.storage.StorageLevel
+ls2.persist(StorageLevel.MEMORY_ONLY)
+
+sc.parallelize("Ashish Tripathi").sample(true,0.1,1234).collect()
+
+val ar1 = Array(1,2,3,4,5)
+val ar2 = Array(3,4,5,6,7)
+ar1.union(ar2)
+ar1.intersection(ar2)
+
+scala> val cogrp1 = sc.parallelize(Array("HDP","SQP","SPRK","HVE","HDP","SPRK","PIG")).map(x => (x,1)).groupByKey()
+cogrp1: org.apache.spark.rdd.RDD[(String, Iterable[Int])] = ShuffledRDD[2] at groupByKey at <console>:21
+
+scala> val cogrp2 = sc.parallelize(Array("HDP","HDP","SQP","SQP","SPRK","SPRK","HVE","HVE","PIG")).map(x => (x,1)).groupByKey()
+cogrp2: org.apache.spark.rdd.RDD[(String, Iterable[Int])] = ShuffledRDD[5] at groupByKey at <console>:21
+
+val gl = fl.coalesce(2) : coalesce is to reduce # of partitions while
+			  repatriation is to increase\decrease the # of partitions
+gl.partitions.size
+
+
+val cogrp2 = sc.parallelize(Array(1,2,3,4,5,6,7,8)).reduce(_ + _)
+
+val cogrp2 = sc.parallelize(Array(1,2,3,4,5,6,7,8)).takeOrdered(4)
+
+============foldbykey===================
+val deptEmployees = List(
+      ("cs",("jack",1000.0)),
+      ("cs",("bron",1200.0)),
+      ("phy",("sam",2200.0)),
+      ("phy",("ronaldo",500.0))
+    )
+  val employeeRDD = sparkContext.makeRDD(deptEmployees)
+
+val maxByDept = employeeRDD.foldByKey(("dummy",0.0))((acc,element)=> if (acc._2 > element._2) acc else element)
+  
+  println("maximum salaries in each dept" + maxByDept.collect().toList)
+==============================================
+
+=======lookup============
+val lookuprdd = sc.parallelize(Array("HDP","SQP","HVE","HBASE","HDP","SQP","HBASE","HDP","SQP","HVE")).map(word => (word,1))
+
+val lookupresult = lookuprdd.lookup("HVE")
+=========================
+
+=========mapvalues=======
+val mapValuesrdd = sc.parallelize(Array("HDP","SQP","HVE","HBASE","HDP","SQP","HBASE","HDP","SQP","HVE")).map(word => (word,1))
+mapValuesrdd.collect() -> this will give you the initial result of mapped key value
+mapValuesrdd.mapValues(v => v*3).collect() -> Each value will be multiplied by 3
+=========================
+
+
+=========collectsAsMap======= -> Provides concrete MAP from an RDD
+val collectAsMapRDD = sc.parallelize(Array("HDP","SQP","HVE","HBASE","HDP","SQP","HBASE","HDP","SQP","HVE")).map(k => (k,1)).reduceByKey(_ + _).collectAsMap()
+=============================
+
+
+=====flatmapvalues==========
+step1: Firstly, lets understand what is map in scala
+-> val scalamap = List("ashish","vinod","sakshi","anuradha","div").map(_.toUpperCase)
+
+step2: Apply flatten to the result
+-> scalamap.flatten => flatten converts a sequence of strings into a sequnce of characters seq[chars]
+
+step3: run flatmap, this is basically = map + flatten
+-> val scalamap = List("ashish","vinod","sakshi","anuradha","div").flatMap(_.toUpperCase)
+
+step4: flatMapValues, is to apply a flatMap on all values of an RDD which is in the form of (K,V) similar to mapValues however, in flatMapValues the resulting sequence is then flattend
+-> val flatMapValuesRDD = sc.parallelize(List("ashish","vinod","sakshi","anuradha","div")).map(k => (k,1))
+-> flatMapValuesRDD.collect()
+-> 
+-> val flatMapValuesResult = flatMapValuesRDD.flatMapValues(v => "BR").collect()
+
+-> flatmap: sc.parallelize(List("ashish","vinod","sakshi","anuradha","div")).flatMap(x => x*2).collect()
+========================
+
+============mean()================
+val meanRDD = sc.parallelize(Array(1,2,3,4,678,98,9,9,9)).mean()
+val meanRDD = sc.parallelize((1 to 50000)).mean()
+============================
+
+============sum()================
+val sumRDD = sc.parallelize(List(1,2,3,4,678,98,9,9,9)).sum()
+above is provide the same result as fold function as below:
+val sumRDD = sc.parallelize(List(1,2,3,4,678,98,9,9,9)).fold(0){(acc,element) => acc + element}
+=================================
+
+=============variance()===========
+val varianceRDD = sc.parallelize(List(1,2,3,4,678,98,9,9,9)).variance()
+variance = sumof (xi - mean)^2/number of elements
+
+val varianceRDD = sc.parallelize((1 to 5)).variance()
+
+above is equalto
+(Math.pow((1-3),2)/5 + Math.pow((2-3),2)/5 + Math.pow((3-3),2)/5 + Math.pow((4-3),2)/5 + Math.pow((5-3),2)/5) which is equal to 2 
+==================================
+
+===========stats()============
+val statsRDD = sc.parallelize((1 to 5)).stats()
+standard deviation is the square root of the variance
+===============================
+
+
+================END==================================================================================================================================
+
+
+
+hdfs://localhost:8020/user/edureka/README.md
+
+localhost:http://localhost:50070
+
+
+
+
+
+
+Partitioning - coalesce and repatriation
+
+submit spark script
+./spark-1.5.2/bin/spark-submit --class "WordCount" --master spark://localhost.localdomain:7077 ./workspace/WordCount/target/scala-2.10/wordcount-runner_2.10-1.0.jar
+
+
+
+cogroup:
+
+scala> val cogrp1 = sc.parallelize(Array("HDP","SQP","SPRK","HVE","PIG")).map(x => (x,1)).groupByKey()
+cogrp1: org.apache.spark.rdd.RDD[(String, Iterable[Int])] = ShuffledRDD[2] at groupByKey at <console>:21
+
+scala> val cogrp2 = sc.parallelize(Array("HDP","HDP","SQP","SQP","SPRK","SPRK","HVE","HVE","PIG")).map(x => (x,1)).groupByKey()
+cogrp2: org.apache.spark.rdd.RDD[(String, Iterable[Int])] = ShuffledRDD[5] at groupByKey at <console>:21
+
+scala> cogrp1.cogroup(cogrp2)
+res0: org.apache.spark.rdd.RDD[(String, (Iterable[Iterable[Int]], Iterable[Iterable[Int]]))] = MapPartitionsRDD[7] at cogroup at <console>:26
+
+scala> val cogrp1 = sc.parallelize(Array("HDP","SQP","SPRK","HVE","HDP","SQP","SPRK","PIG")).map(x => (x,1)).reduceByKey(_ + _).collect()
+scala> val cogrp1 = sc.parallelize(Array("HDP","SQP","SPRK","HVE","HDP","SQP","SPRK","PIG")).map(x => (x,1)).reduceByKey(_ + _)
+scala> val cogrp2 = sc.parallelize(Array("HDP","HDP","SQP","SQP","SPRK","SPRK","HVE","HVE","PIG")).map(x => (x,1)).reduceByKey(_ + _)
+scala> cogrp1.join(cogrp2)
+scala> cogrp1.join(cogrp2).collect()
+
+
+
+
+
+
+======foldbykey=====
+
+====================
+
+=======reduceByKey=======
+val afs = sc.parallelize(Array("HDP","SQP","HVE","HBASE","HDP","SQP","HBASE","HDP","SQP","HVE")).map(word => (word,1))
+
+val sfp = afs.reduceByKey(_ + _).collect()
+==========================
+
+=======groupByKey========
+val grpbykey = sc.parallelize(Array("HDP","SQP","HVE","HBASE","HDP","SQP","HBASE","HDP","SQP","HVE")).map(word => (word,1))
+
+val grbykeyresult = grpbykey.groupByKey().collect()
+=========================
+
+
+
+
+
+
+countByKey===================
+val countByKeyRDD = sc.parallelize(Array("HDP","SQP","HVE","HBASE","HDP","SQP","HBASE","HDP","SQP","HVE")).map(k => (k,1))
+val countByKeyResult = countByKeyRDD.countByKey()
+=============================
+
+to get the number of default partitions in spark: sc.defaultParallelism
+
+
+
+
+
+===========join===============
+val joinRDD1 = sc.parallelize(Array(("Ashish", 25),("Vinod",35),("Archie",45),("Sandy",75)))
+
+val joinRDD2 = sc.parallelize(Array(("Ashish", 69),("Vinod",79),("Archae",45),("Sandeep",75)))
+
+joinRDD1.join(joinRDD2).collect()
+===============================
+
+run wordcount
+./bin/spark-submit --class "WordCount" ~/workspace/WordCount/target/scala-2.10/wordcount-runner_2.10-1.0.jar
