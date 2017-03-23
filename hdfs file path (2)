@@ -1,3 +1,7 @@
+for hadoop sequnce file run below command post starting spark master and slave:
+./spark-1.5.2/bin/spark-submit --class "SparkPi" --master spark://localhost.localdomain:7077 --deploy-mode client /home/edureka/NumPiTest/target/scala-2.10/numpitestrunner_2.10-1.0.jar
+
+===============================================================
 Cache():
 val cacherdd = sc.parallelize(Array(1,2,3,4,5,6,7,8,9))
 val cacherddmapped = cacherdd.map(x => (x,"Code"))
@@ -7,40 +11,54 @@ check if rdd was cached
 scala> res24.getStorageLevel.useMemory
 res37: Boolean = true
 
-sc.parallelize(Array(1,2,3,1,2,3,2,2,2).map(x => (x,1)).countByValue()
+countByValue:
+sc.parallelize(Array(1,2,3,1,2,3,2,2,2)).map(x => (x,1)).collect()
+sc.parallelize(Array(1,2,3,1,2,3,2,2,2)).map(x => (x,1)).countByValue()
 
+Distinct:
 sc.parallelize(Array(1,2,3,1,2,3,2,2,2)).map(x => (x,1)).distinct().collect()
 
+Filter (fetches the data from hadoop):
 sc.textFile("./README.md").filter(line => line.contains("Spark")).collect()
 
+Accumulators:
 val accum = sc.accumulator(0)
 sc.textFile("./README.md").filter(line => line.contains("Spark")).foreach(l => accum += l.length)
 accum
 
+persist:
 import org.apache.spark.storage.StorageLevel
+val ls2 = sc.parallelize(Array(1,2,3,2,1,1,1,2,3,4)).map(x => (x,1))
 ls2.persist(StorageLevel.MEMORY_ONLY)
+ls2.collect()
+check the storage in spark app ui for spark shell, you shall see the stored rdd and its size. Again run 
+ls2.collect(): the amount of time taken this time should be much less than the first collect.
 
-sc.parallelize("Ashish Tripathi").sample(true,0.1,1234).collect()
+ls2.unpersist()
+ls2.toDebugString
 
-val ar1 = Array(1,2,3,4,5)
-val ar2 = Array(3,4,5,6,7)
-ar1.union(ar2)
-ar1.intersection(ar2)
+Union & Intersection:
+val ar1rdd = sc.parallelize(Array(1,2,3,4,5))
+val ar2rdd = sc.parallelize(Array(7,8,9,0,11))
+val ar1unionar2 = ar1.union(ar2)
+ar1unionar2.collect()
+ar1rdd.intersection(ar2rdd)
 
+groupByKey:
 scala> val cogrp1 = sc.parallelize(Array("HDP","SQP","SPRK","HVE","HDP","SPRK","PIG")).map(x => (x,1)).groupByKey()
 cogrp1: org.apache.spark.rdd.RDD[(String, Iterable[Int])] = ShuffledRDD[2] at groupByKey at <console>:21
+cogrp1.collect()
 
 scala> val cogrp2 = sc.parallelize(Array("HDP","HDP","SQP","SQP","SPRK","SPRK","HVE","HVE","PIG")).map(x => (x,1)).groupByKey()
 cogrp2: org.apache.spark.rdd.RDD[(String, Iterable[Int])] = ShuffledRDD[5] at groupByKey at <console>:21
 
-val gl = fl.coalesce(2) : coalesce is to reduce # of partitions while
-			  repatriation is to increase\decrease the # of partitions
+coalesce:
+val gl = cogrp1.coalesce(1) : coalesce is to reduce # of partitions while repatriation is to increase\decrease the # of partitions
 gl.partitions.size
 
-
-val cogrp2 = sc.parallelize(Array(1,2,3,4,5,6,7,8)).reduce(_ + _)
-
-val cogrp2 = sc.parallelize(Array(1,2,3,4,5,6,7,8)).takeOrdered(4)
+reduce:
+val cogrp3 = sc.parallelize(Array(1,2,3,4,5,6,7,8)).reduce(_ + _)
+val cogrp4 = sc.parallelize(Array(1,2,3,4,5,6,7,8)).takeOrdered(4)
 
 ============foldbykey===================
 val deptEmployees = List(
@@ -49,7 +67,7 @@ val deptEmployees = List(
       ("phy",("sam",2200.0)),
       ("phy",("ronaldo",500.0))
     )
-  val employeeRDD = sparkContext.makeRDD(deptEmployees)
+  val employeeRDD = sc.makeRDD(deptEmployees)
 
 val maxByDept = employeeRDD.foldByKey(("dummy",0.0))((acc,element)=> if (acc._2 > element._2) acc else element)
   
@@ -61,6 +79,11 @@ val lookuprdd = sc.parallelize(Array("HDP","SQP","HVE","HBASE","HDP","SQP","HBAS
 
 val lookupresult = lookuprdd.lookup("HVE")
 =========================
+
+=================================> STOPPED HERE ============================================>>>
+
+
+
 
 =========mapvalues=======
 val mapValuesrdd = sc.parallelize(Array("HDP","SQP","HVE","HBASE","HDP","SQP","HBASE","HDP","SQP","HVE")).map(word => (word,1))
@@ -76,21 +99,21 @@ val collectAsMapRDD = sc.parallelize(Array("HDP","SQP","HVE","HBASE","HDP","SQP"
 
 =====flatmapvalues==========
 step1: Firstly, lets understand what is map in scala
--> val scalamap = List("ashish","vinod","sakshi","anuradha","div").map(_.toUpperCase)
+-> val scalamap = List("Vivek","vinod","sakshi","anuradha","div").map(_.toUpperCase)
 
 step2: Apply flatten to the result
 -> scalamap.flatten => flatten converts a sequence of strings into a sequnce of characters seq[chars]
 
 step3: run flatmap, this is basically = map + flatten
--> val scalamap = List("ashish","vinod","sakshi","anuradha","div").flatMap(_.toUpperCase)
+-> val scalamap = List("Vivek","vinod","sakshi","anuradha","div").flatMap(_.toUpperCase)
 
 step4: flatMapValues, is to apply a flatMap on all values of an RDD which is in the form of (K,V) similar to mapValues however, in flatMapValues the resulting sequence is then flattend
--> val flatMapValuesRDD = sc.parallelize(List("ashish","vinod","sakshi","anuradha","div")).map(k => (k,1))
+-> val flatMapValuesRDD = sc.parallelize(List("Vivek","vinod","sakshi","anuradha","div")).map(k => (k,1))
 -> flatMapValuesRDD.collect()
 -> 
 -> val flatMapValuesResult = flatMapValuesRDD.flatMapValues(v => "BR").collect()
 
--> flatmap: sc.parallelize(List("ashish","vinod","sakshi","anuradha","div")).flatMap(x => x*2).collect()
+-> flatmap: sc.parallelize(List("Vivek","vinod","sakshi","anuradha","div")).flatMap(x => x*2).collect()
 ========================
 
 ============mean()================
@@ -151,7 +174,6 @@ cogrp2: org.apache.spark.rdd.RDD[(String, Iterable[Int])] = ShuffledRDD[5] at gr
 scala> cogrp1.cogroup(cogrp2)
 res0: org.apache.spark.rdd.RDD[(String, (Iterable[Iterable[Int]], Iterable[Iterable[Int]]))] = MapPartitionsRDD[7] at cogroup at <console>:26
 
-scala> val cogrp1 = sc.parallelize(Array("HDP","SQP","SPRK","HVE","HDP","SQP","SPRK","PIG")).map(x => (x,1)).reduceByKey(_ + _).collect()
 scala> val cogrp1 = sc.parallelize(Array("HDP","SQP","SPRK","HVE","HDP","SQP","SPRK","PIG")).map(x => (x,1)).reduceByKey(_ + _)
 scala> val cogrp2 = sc.parallelize(Array("HDP","HDP","SQP","SQP","SPRK","SPRK","HVE","HVE","PIG")).map(x => (x,1)).reduceByKey(_ + _)
 scala> cogrp1.join(cogrp2)
@@ -195,12 +217,23 @@ to get the number of default partitions in spark: sc.defaultParallelism
 
 
 ===========join===============
-val joinRDD1 = sc.parallelize(Array(("Ashish", 25),("Vinod",35),("Archie",45),("Sandy",75)))
+val joinRDD1 = sc.parallelize(Array(("Vivek", 25),("Vinod",35),("Archie",45),("Sandy",75)))
 
-val joinRDD2 = sc.parallelize(Array(("Ashish", 69),("Vinod",79),("Archae",45),("Sandeep",75)))
+val joinRDD2 = sc.parallelize(Array(("Vivek", 69),("Vinod",79),("Archae",45),("Sandeep",75)))
 
 joinRDD1.join(joinRDD2).collect()
 ===============================
 
 run wordcount
 ./bin/spark-submit --class "WordCount" ~/workspace/WordCount/target/scala-2.10/wordcount-runner_2.10-1.0.jar
+
+run MovieLensALS
+----------------
+
+
+./bin/spark-submit --class "MovieLensALS" ~/workspace/movielens_new/target/scala-2.10/movie-recommendation-new_2.10-1.0.jar
+
+
+============================sample=====
+sample:
+sc.parallelize("VVS Laxman").sample(true,0.1,1234).collect()
