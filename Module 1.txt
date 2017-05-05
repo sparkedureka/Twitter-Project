@@ -1,0 +1,200 @@
+19 + 34 (type inference)
+
+Immutable vs Mutable - Val vs Var
+
+val msg = "Hello World"
+msg = "Bye World"
+
+var msg = "Hello Kitty"
+msg = "Bye Kitty"
+
+Type Inference:
+var msg = "Hello Kitty"
+msg = 345
+
+Initialized Vars:
+
+var a:Int=_
+var b:String=_
+
+val c:Int=_ :--> Not possible
+
+==================
+Block expression:
+
+val x = {val a = 10; val b = 20; a - b}
+
+===============lazy evaluations (slide # 23)==================
+val file=scala.io.Source.fromFile("module1.txt").mkString
+
+lazy val file=scala.io.Source.fromFile("readings.txt").mkString
+
+Calling file still will return the same error, however, if we create the file now, it would read the file still
+
+create readings.txt in edureka folder, and it'll work.
+===============================================================
+
+=============(if else, slide # 25)
+var x = 5;
+val s = if (x > 0 && x < 6) 1 else 0
+val s = if (x > 0 && x < 100) "positive" else 0
+
+=============(if else, slide # 26)
+var args = "SCALA"
+args.foreach(arg => println(arg))
+args.foreach(println)
+
+=============for comprehension, slide # 27====================
+for(i <- 1 to 10) println(i)
+
+val in = "Hello World"
+var sum = 0
+for(i <- 0 until in.length) sum += i
+println(sum)
+
+advanced for loop
+for(i<-1 to 3; j <-1 to 3) println(10*i + j)
+
+multi-generator for loop with conditions
+for(i<-1 to 3; j <-1 to 3 if i==j) println(10*i + j)
+
+introduce variables in loop
+for(i<-1 to 3; x=4-i; j<-x to 3) println(10*i + j)
+
+============for with yield, slide # 30 =====================
+val arr1 = for(i<-1 to 10) yield i*2.5
+for(i<-arr1) println(i)
+
+val a = Array(1,2,3,4,5)
+for(i<-a) yield i%2
+
+=============methods vs functions, slide # 31================
+def area(radius:Int):Double = {3.14*radius*radius}
+
+Recursive function:
+def factorial(x:Int):Int = {if (x==0) 1 else x*factorial(x-1)}
+
+factorial(9)
+===========================
+def concatstr(arg1:String, arg2:String="Ashish", arg3:String="Kumar") = arg1+arg2+arg3
+
+concatstr("Hi ")
+concatstr("Hey ",arg3=" Welcome",arg2=" Vinod")
+
+
+=============Procedures, slide # 33=========================
+def rect_area(length:Float, breadth:Float) {val area=length*breadth}
+
+rect_area(3.45f,5.67f)
+
+=============Arrays, slide # 35=========================
+val n = new Array[Int](10)
+val s = new Array[String](10)
+val st = Array("Scala","Course")
+
+n(0) = 2
+
+=============Array Buffers, slide # 36=========================
+val a = ArrayBuffer[Int]()
+import scala.collection.mutable.ArrayBuffer
+val a = ArrayBuffer[Int]()
+a+=1
+a+=2
+a+=(2,3,5)
+a++=Array(6,7,8)
+
+============Array common operations, slide # 37===============
+a.trimEnd(2)
+a.insert(2,9)
+a.insert(2,10,11,12)
+a.remove(2)
+a.remove(2,3)
+
+for(el<-a) println(el)
+for(el<-a if el%2 == 0) yield(2*el)
+
+============Arrays & ArrayBuffers, slide #38===================
+Array(1,2,3,4).sum
+Array(1,2,5,9,8).max
+val k = Array(1,7,2,9)
+scala.util.Sorting.quickSort(k)
+k
+
+a.mkString("**")
+a.mkString("->")
+a.mkString(",")
+
+============Arrays & ArrayBuffers, slide #39===================
+Go through slides 24 to 29 in instructor slides
+You can create both Immutable and Mutable Maps
+ ==> Immutable Collection
+val map1 = Map(1 -> "Mechanics", 2 -> "Physics", 3 -> "Astronomy", 4 -> "BioTechnology")
+ ==> Mutable Collection
+val map2 = scala.collection.mutable.Map("Mechanics" -> "M", "Physics" -> "P")
+
+Immutable with VALS
+val a = Map("AL" -> "Alabama")
+val b = Map("AK" -> "Alaska")
+a=b
+
+a += ("AK" -> "Alaska")
+
+val c = a + ("AR" -> "Arkansas", "AZ" -> "Arizona")
+val d = c + ("AR" -> "banana")
+val e = d - "AR"
+val f = e - "AZ" - "AL"
+a("AR") = "foo"
+
+Immutable with Vars:
+var x = Map("AL" -> "Alabama")
+a
+x=a
+x("AL") = "foo"
+x += ("AK" -> "Alaska"); println(x)
+x = Map("x" -> "Colorado")
+
+
+Mutable with Vals:
+
+Mutable with Vars:
+
+val a = map1(1)
+val x = map1.getOrElse(3,"Default")
+val x = map1.getOrElse(6,"Default")
+
+============Accessing Maps, slide # 40=========================
+map2-="Mechanics"
+map2+=("Astronomy" -> "A")
+map2+=("Biology" -> "B")
+
+for((k,v) <- map2) yield (v,k)
+
+===========tuples, slide # 41===================================
+val t = (1,4,"Bob","Jack")
+t._2
+t _2
+var t = "New Delhi India".partition(_.isUpper)
+t._2
+
+===========list, slide # 42====================================
+val lst = List(1,2)
+lst.head
+lst.tail
+2::List(4,5)
+3::4::5::6::7::Nil
+
+===========Lists, slide # 43==================================
+def sum(l:List[Int]):Int = {if (l==Nil) 0 else l.head + sum(l.tail)}
+val y = sum(lst)
+
+
+=====================================
+
+
+
+
+
+
+
+
+
