@@ -1,0 +1,37 @@
+Module 4:
+========
+
+pyspark
+
+textfile = sc.textFile('file:///home/edureka/README.txt')
+textfile.count()
+
+textfile.first()
+LinesWithSpark=textfile.filter(lambda line: "home" in line); 
+textfile.filter(lambda line: "home" in line).count()
+
+RShell
+
+df <- createDataFrame(sqlContext,faithful)
+head(df)
+people <- read.df(sqlContext,'file:///home/edureka/spark-1.5.2/examples/src/main/resources/people.json','json')
+head(people)
+tail(people)
+printSchema(people)
+
+===SBT test===================
+./spark-1.5.2/bin/spark-submit --class "LogAnalyzer" --master local[2] /home/edureka/SampleProject/target/scala-2.10/sampleproject_2.10-1.0.jar
+
+./spark-1.5.2/bin/spark-submit --class "LogAnalyzer" --master spark://localhost.localdomain:7077 --deploy-mode client /home/edureka/SampleProject/target/scala-2.10/sampleproject_2.10-1.0.jar
+
+./spark-1.5.2/bin/spark-submit --class "LogAnalyzer" --master spark://localhost.localdomain:7077 --deploy-mode cluster /home/edureka/SampleProject/target/scala-2.10/sampleproject_2.10-1.0.jar
+
+======server log analysis============
+    val logFile = "file:///home/edureka/Server_Log_Sample"
+    val lines = sc.textFile(logFile)
+    val errors = lines.filter(_.startsWith("ERROR"))
+    val messages = errors.map(_.split("\t")).map(r => r(1))
+ 
+    messages.toDebugString
+
+

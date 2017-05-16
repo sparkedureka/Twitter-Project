@@ -1,0 +1,24 @@
+HIVE
+----
+
+1) $HIVE_HOME/bin/hive :- Connect to Hive
+2) SHOW TABLES;
+2) Create tables in Hive:
+	-- CREATE TABLE pokes (foo INT, bar STRING);
+
+CREATE TABLE IF NOT EXISTS employee (eid int, name String, salary String, destination String)
+COMMENT ‘Employee details’
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ‘,’
+LINES TERMINATED BY ‘\n’
+STORED AS TEXTFILE;
+
+CREATE TABLE IF NOT EXISTS employee (eid int, name String, salary String, destination String)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ","
+LINES TERMINATED BY "\n"
+STORED AS TEXTFILE;
+
+3) SHOW TABLES;
+
+4) 

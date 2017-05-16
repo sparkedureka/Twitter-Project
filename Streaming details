@@ -1,0 +1,31 @@
+~/spark-1.5.2/bin/spark-submit --class "TwitterPopularTags"
+
+consumer key api: rXSczW0WTtxkR18sPzd1rYdQa
+Consumer Secret Key: PdH5FDr67bmIhS30B6A16tACUZVWCuhqjmBolY3eWI6TbfT4d2
+Access Token:  829554074076864512-w0BotN8CHsOFpTGn38erPu3r3TeA6DZ
+Access Token Secret:  Plby2GaSZcGvD8a1yfuPjc9wnIxHyb5nGztdAcd9fg3MC
+
+
+Owner: Speaking_Spark
+Owner ID: 829554074076864512
+
+
+
+/stream-proj/target/scala-2.10/TwitterPopularTags-assembly-1.0.jar
+
+local mode:
+----------
+~/spark-1.5.2/bin/spark-submit --class TwitterPopularTags ./target/scala-2.10/TwitterPopularTags-assembly-1.0.jar rXSczW0WTtxkR18sPzd1rYdQa PdH5FDr67bmIhS30B6A16tACUZVWCuhqjmBolY3eWI6TbfT4d2 829554074076864512-w0BotN8CHsOFpTGn38erPu3r3TeA6DZ Plby2GaSZcGvD8a1yfuPjc9wnIxHyb5nGztdAcd9fg3MC
+
+in client mode:
+-------------------------------------
+~/spark-1.5.2/bin/spark-submit --deploy-mode client --class TwitterPopularTags ./target/scala-2.10/TwitterPopularTags-assembly-1.0.jar  rXSczW0WTtxkR18sPzd1rYdQa PdH5FDr67bmIhS30B6A16tACUZVWCuhqjmBolY3eWI6TbfT4d2 829554074076864512-w0BotN8CHsOFpTGn38erPu3r3TeA6DZ Plby2GaSZcGvD8a1yfuPjc9wnIxHyb5nGztdAcd9fg3MC IPL,DELHI
+
+in cluster mode:
+-------------------------------------
+~/spark-1.5.2/bin/spark-submit --deploy-mode cluster --class TwitterPopularTags ./target/scala-2.10/TwitterPopularTags-assembly-1.0.jar  rXSczW0WTtxkR18sPzd1rYdQa PdH5FDr67bmIhS30B6A16tACUZVWCuhqjmBolY3eWI6TbfT4d2 829554074076864512-w0BotN8CHsOFpTGn38erPu3r3TeA6DZ Plby2GaSZcGvD8a1yfuPjc9wnIxHyb5nGztdAcd9fg3MC
+
+With filterred tweets in cluster mode:
+-------------------------------------
+~/spark-1.5.2/bin/spark-submit --deploy-mode cluster --class TwitterPopularTags ./target/scala-2.10/TwitterPopularTags-assembly-1.0.jar  rXSczW0WTtxkR18sPzd1rYdQa PdH5FDr67bmIhS30B6A16tACUZVWCuhqjmBolY3eWI6TbfT4d2 829554074076864512-w0BotN8CHsOFpTGn38erPu3r3TeA6DZ Plby2GaSZcGvD8a1yfuPjc9wnIxHyb5nGztdAcd9fg3MC IPL,INDIA
+

@@ -1,0 +1,138 @@
+Check if zookeeper is running:
+-----------------------------
+./bin/zkServer.sh status
+
+Output should be as below:
+JMX enabled by default
+Using config: /home/edureka/zookeeper-3.3.6/bin/../conf/zoo.cfg
+Mode: standalone
+
+List existing kafka topics:
+---------------------------
+bin/kafka-topics.sh --zookeeper localhost:2181 --list
+
+Subscribe to a kafka topic as a consumer in a terminal:
+------------------------------------------------------
+./bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic salestopic :--> This will begin receiving the new messages posted
+./bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic salestopic --from-beginning :--> This will recieve messages posted from the beginning
+
+Produce kafka messages as producer in a separate terminal window (topics poduced below should be recieved on kafka consumer window):
+-----------------------------------------------------------------------------------------------------------------------------------
+./bin/kafka-console-producer.sh --broker-list localhost:9092 --topic salestopic
+This is scala class
+This is not a Python class
+
+Start HBASE:
+-----------
+./bin/start-hbase.sh 
+
+Starting hbase shell:
+--------------------
+./bin/hbase shell
+
+create table:
+create 'emp', 'personal data', 'professional data'
+
+insert rows in the table:
+put 'emp','2','personal data:name','Shaurya'
+put 'emp','2','personal data:city','Mumbai'
+put 'emp','2','professional data:designation','Clerk'
+put 'emp','2','professional data:salary','20000'
+put 'emp','2','professional data:department','Accounts'
+
+scan data you have inserted:
+scan 'emp'
+
+Read data from salesdata:
+-------------------------
+get '<tabledata>','<row identifier>' eg: below:
+get 'salesdata','2017-03-26-10-1000'
+get 'salesdata','2017-03-26-11-1000'
+ or scan 'salesdata' to see all rows...
+
+How to run the project:
+-----------------------
+Start Kafka
+
+1) ./bin/zookeeper-server-start.sh config/zookeeper.properties
+
+2) Check if zookeeper is running:
+-----------------------------
+./bin/zkServer.sh status
+Output should be as below if running already:
+JMX enabled by default
+Using config: /home/edureka/zookeeper-3.3.6/bin/../conf/zoo.cfg
+Mode: standalone
+
+3) ./bin/kafka-server-start.sh config/server.properties
+
+
+4) ./bin/kafka-server-start.sh config/server2.properties
+
+--  ps -ef | grep kafka \\ check to see if the kafka servers are running along with zookeeper
+
+-- ps aux | grep server-1.properties \\to check the pid of the process where server-1 broker is running
+
+4) List existing kafka topics:
+---------------------------
+./bin/kafka-topics.sh --zookeeper localhost:2181 --list
+
+5) create new topic with 2 partitions and 2 replicas (which depends on the number of brokers started, cant be more than that number)
+bin/kafka-topics.sh --zookeeper localhost:2181 --create --topic first --partitions 2 --replication-factor 2
+
+6) describe a topic
+bin/kafka-topics.sh --zookeeper localhost:2181 --describe --topic first
+
+7) start kafka producer on particular broker
+bin/kafka-console-producer.sh --broker-list localhost:9092 --topic first
+
+8) start kafka consumer
+bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic first 
+
+9) start kafka consumer to receive all msgs from beginning
+bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic first --from-beginning
+
+5) Start HBASE:
+   -----------
+  ./bin/start-hbase.sh 
+
+6) Starting hbase shell:
+    -------------------- 
+   ./bin/hbase shell
+
+7) List exisiting tables using LIST
+
+8) scan 'salesdata' for current set of rows in this table:
+
+9)  chek hdfs we should see the salesdata table in hbase
+
+10) Drop salesdata from hbase:
+   disable 'salesdata'
+   drop 'salesdata'
+
+11) scan 'salesdata' again you should not see it.
+12) check hdfs we shouldnt even see the salesdata table in hbase
+13) Now create salesdata:
+    create 'salesdata','count'
+
+14) Now run, the main program in Final Project from IDE, that'd start sparkstreaming listening on the kafka producer setup
+15) now run the kafkaproducers main program, it should generate sales messages which would be persisted onto hbase salesdata table via spark streaming
+16) scan 'salesdata' for details
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
