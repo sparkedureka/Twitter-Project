@@ -1,5 +1,73 @@
-SBT:
 
+
+WordCount:
+
+1) Create a project directory WordCountTest
+2) Inside the folder Run mkdir4sbt -> this will create the folder structure required for sbt
+3) create build.sbt file inside the folder
+4) vi build.sbt and add below code and save:
+
+name := "WordCountTest"
+
+version := "1.0"
+
+scalaVersion := "2.10.6"
+val sparkVersion = "2.2.0"
+
+dependencyOverrides ++= Set(
+  "io.netty" % "netty" % "3.9.9.Final",
+  "commons-net" % "commons-net" % "2.2",
+  "com.google.guava" % "guava" % "11.0.2"
+)
+libraryDependencies += "org.apache.spark" %% "spark-core" % sparkVersion
+
+5) Run SBT Package this would create a JAR inside target folder target/scala-2.10
+6) Run SBT Eclipse this would generate binaries required by Eclipse ide. Once done, you can open this project in eclipse
+7) Import this project in eclipse
+8) Create a scala object inside src\main
+9) Start writing below program
+
+import org.apache.spark.SparkContext
+import org.apache.spark.SparkConf
+import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
+
+object wordcount {
+  def main(args: Array[String]) {
+        val conf1 = new SparkConf()
+                   .setAppName("WordCount").setMaster("local[*]")
+//                 .setMaster("local")
+
+        val sc = new SparkContext(conf1)
+
+
+        val test = sc.textFile("file:///home/edureka/test/TestDoc1")
+
+        test.flatMap { line => line.split(" ")
+        }
+            .map { word => (word,1)
+        }
+            .reduceByKey(_+_)
+            .saveAsTextFile("./wordout.txt")
+
+        sc.stop
+ }
+}
+
+10) make sure any changes you make in the program, rebuild the package using sbt
+11) run it from scala ide by right clicking the .scala program, run as scala application, program will be running in local mode
+12) cd ./project/WordCountTest and run as below for local mode from the terminal.
+$SPARK_HOME/bin/spark-submit  --class "wordcount" ~/project/WordCountTest/target/scala-2.10/wordcounttest_2.10-1.0.jar
+
+13) cd ./project/WordCountTest and run as below for client mode from the terminal.
+$SPARK_HOME/bin/spark-submit  --master spark://localhost:7077 --deploy-mode client --class "wordcount" ~/project/WordCountTest/target/scala-2.10/wordcounttest_2.10-1.0.jar
+
+14) cd ./project/WordCountTest and run as below for cluster mode from the terminal on spark cluster.
+$SPARK_HOME/bin/spark-submit  --master spark://localhost:7077 --deploy-mode cluster --class "wordcount" ~/project/WordCountTest/target/scala-2.10/wordcounttest_2.10-1.0.jar
+
+15) cd ./project/WordCountTest and run as below for cluster mode from the terminal on Yarn .
+$SPARK_HOME/bin/spark-submit  --master yarn --deploy-mode cluster --class "wordcount" ~/project/WordCountTest/target/scala-2.10/wordcounttest_2.10-1.0.jar
+
+SBT wit Helloworld another example:
 1) Goto ~/Helloworld/
 2) look at src/main/scala/hello.scala
 3) look at build.sbt
@@ -10,16 +78,3 @@ SBT:
 7) Goto Helloworld dir and run sbt eclipse
 8) goto eclipse and import the project
 
-WordCount:
-
-run wordcount
-./bin/spark-submit --class "WordCount" ~/workspace/WordCount/target/scala-2.10/wordcount-runner_2.10-1.0.jar
-
-running application on yarn:
-./bin/spark-submit --master yarn --deploy-mode cluster --class "WordCount" ~/workspace/WordCount/target/scala-2.10/wordcount_2.10-1.0.jar
-
-running app as client mode on spark:
-./bin/spark-submit --master spark://localhost.localdomain:7077 --deploy-mode client --class "WordCount" ~/workspace/WordCount/target/scala-2.10/wordcount-runner_2.10-1.0.jar
-
-running app as cluster mode on spark:
-./bin/spark-submit --master spark://localhost.localdomain:7077 --deploy-mode cluster --class "WordCount" ~/workspace/WordCount/target/scala-2.10/wordcount-runner_2.10-1.0.jar
