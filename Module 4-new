@@ -1,0 +1,25 @@
+SBT:
+
+1) Goto ~/Helloworld/
+2) look at src/main/scala/hello.scala
+3) look at build.sbt
+4) invoke sbt package
+5) run ls and look at the generated jar file
+6) run below spark program in local mode:
+   --> spark-submit --class "Hello" --master local{2} target/scala-2.12/hello-world_2.12-1.0.jar
+7) Goto Helloworld dir and run sbt eclipse
+8) goto eclipse and import the project
+
+WordCount:
+
+run wordcount
+./bin/spark-submit --class "WordCount" ~/workspace/WordCount/target/scala-2.10/wordcount-runner_2.10-1.0.jar
+
+running application on yarn:
+./bin/spark-submit --master yarn --deploy-mode cluster --class "WordCount" ~/workspace/WordCount/target/scala-2.10/wordcount_2.10-1.0.jar
+
+running app as client mode on spark:
+./bin/spark-submit --master spark://localhost.localdomain:7077 --deploy-mode client --class "WordCount" ~/workspace/WordCount/target/scala-2.10/wordcount-runner_2.10-1.0.jar
+
+running app as cluster mode on spark:
+./bin/spark-submit --master spark://localhost.localdomain:7077 --deploy-mode cluster --class "WordCount" ~/workspace/WordCount/target/scala-2.10/wordcount-runner_2.10-1.0.jar

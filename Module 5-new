@@ -1,0 +1,212 @@
+RDD COmmands:
+1) sc.parallelize(Array(1,2,3,4,5))
+2) spark.read.textFile("file:///home/edureka/test/TestDoc1").rdd
+3) val words= spark.sparkContext.parallelize(Seq("the","quick","brown","fox"))
+	val wordpair=words.map(w => (w.charAt(0),w))
+	 wordpair.collect().foreach(println)
+
+4) Popular Transformations:
+   --map 
+sc.parallelize(Array(1,2,3,1,2,3,2,2,2),3).map((_,1)) 
+   -- Filter (fetches the data from hadoop):
+sc.textFile("file:///home/edureka/test/TestDoc1",3).filter(line => line.contains("sudo")).collect()
+
+Union & Intersection:
+val ar1rdd = sc.parallelize(Array(1,2,3,4,5))
+val ar2rdd = sc.parallelize(Array(1,28,9,3,5,0,11))
+val ar1unionar2 = ar1rdd.union(ar2rdd)
+ar1unionar2.collect()
+val ar1inter=ar1rdd.intersection(ar2rdd)
+ar1inter.collect
+
+groupByKey:
+scala> val cogrp1 = sc.parallelize(Array("HDP","SQP","SPRK","HVE","HDP","SPRK","PIG")).map(x => (x,1)).groupByKey()
+cogrp1: org.apache.spark.rdd.RDD[(String, Iterable[Int])] = ShuffledRDD[2] at groupByKey at <console>:21
+cogrp1.collect()
+
+=======reduceByKey=======
+val afs = sc.parallelize(Array("HDP","SQP","HVE","HBASE","HDP","SQP","HBASE","HDP","SQP","HVE")).map(word => (word,1))
+
+val sfp = afs.reduceByKey(_ + _).collect()
+==========================
+
+===========join===============
+val joinRDD1 = sc.parallelize(Array(("Vivek", 25),("Vinod",35),("Archie",45),("Sandy",75)))
+
+val joinRDD2 = sc.parallelize(Array(("Vivek", 69),("Vinod",79),("Archae",45),("Sandeep",75)))
+
+joinRDD1.join(joinRDD2,4).collect()
+===============================
+
+coalesce:
+afs.partitions.size
+val afs = afs.coalesce(1) : coalesce is to reduce # of partitions while repatriation is to increase\decrease the # of partitions
+
+cogroup:
+
+scala> val cogrp1 = sc.parallelize(Array("HDP","SQP","SPRK","HVE","PIG")).map(x => (x,1))
+cogrp1: org.apache.spark.rdd.RDD[(String, Iterable[Int])] = ShuffledRDD[2] at groupByKey at <console>:21
+
+scala> val cogrp2 = sc.parallelize(Array("HDP","HDP","SQP","SQP","SPRK","SPRK","HVE","HVE","PIG")).map(x => (x,"a"))
+cogrp2: org.apache.spark.rdd.RDD[(String, Iterable[Int])] = ShuffledRDD[5] at groupByKey at <console>:21
+
+scala> val cgrpt= cogrp1.cogroup(cogrp2,3)
+res0: org.apache.spark.rdd.RDD[(String, (Iterable[Iterable[Int]], Iterable[Iterable[Int]]))] = MapPartitionsRDD[7] at cogroup at <console>:26
+
+cogrpt.collect
+
+Actions:
+-======-
+reduce:
+val red3 = sc.parallelize(Array(1,2,3,4,5,6,7,8),3).reduce(_ + _)
+takeordered
+val tkeord4 = sc.parallelize(Array(1,2,3,4,5,6,7,8)).takeOrdered(4)
+
+
+
+countByKey===================
+val countByKeyRDD = sc.parallelize(Array("HDP","SQP","HVE","HBASE","HDP","SQP","HBASE","HDP","SQP","HVE")).map(k => (k,1))
+val countByKeyResult = countByKeyRDD.countByKey()
+sc.parallelize(List("Vivek","vinod","sakshi","anuradha","div")).map(k => (k,1)).map{case (x,y) => (y,x)}.collect()
+=============================
+
+Accumulators:
+val accum = sc.accumulator(0)
+sc.textFile("./README.md").filter(line => line.contains("Spark")).foreach(l => accum += l.length)
+accum
+
+countByKey===================
+val countByKeyRDD = sc.parallelize(Array("HDP","SQP","HVE","HBASE","HDP","SQP","HBASE","HDP","SQP","HVE")).map(k => (k,1))
+val countByKeyResult = countByKeyRDD.countByKey()
+sc.parallelize(List("Vivek","vinod","sakshi","anuradha","div")).map(k => (k,1)).map{case (x,y) => (y,x)}.collect()
+=============================
+
+Data Loading in RDD: addFile:
+import org.apache.spark.SparkFiles
+
+save as text file
+ar1rdd.map(x => (x,1)).saveAsTextFile("/tmp/testfile")
+
+sequencefile:
+ar1rdd.map(x => (x,1)).saveAsSequenceFile("/tmp/testseq")
+
+==========================
+Cache():
+val cacherdd = sc.parallelize(Array(1,2,3,4,5,6,7,8,9))
+val cacherddmapped = cacherdd.map(x => (x,"Code"))
+fcacherddmapped.cache()
+
+check if rdd was cached
+scala> res24.getStorageLevel.useMemory
+res37: Boolean = true
+
+countByValue:
+sc.parallelize(Array(1,2,3,1,2,3,2,2,2)).countByValue()
+sc.parallelize(Array(1,2,3,1,2,3,2,2,2)).map((_,1))
+
+Distinct:
+sc.parallelize(Array(1,2,3,1,2,3,2,2,2)).distinct().collect()
+
+persist:
+import org.apache.spark.storage.StorageLevel
+val ls2 = sc.parallelize(Array(1,2,3,2,1,1,1,2,3,4)).map(x => (x,1))
+ls2.persist(StorageLevel.MEMORY_ONLY)
+ls2.collect()
+check the storage in spark app ui for spark shell, you shall see the stored rdd and its size. Again run 
+ls2.collect(): the amount of time taken this time should be much less than the first collect.
+
+ls2.unpersist()
+ls2.toDebugString
+
+===========foldbykey===================
+empname,   empsal, deptname
+jack       1000.0    cs
+bron       1200.0    cs
+sam        2200.0    phy
+ronaldo    500.0     phy
+
+select a.empname, a.empsal, a.deptname 
+from emp a
+where a.empsal = (select Max(b.empsal) from emp b
+                  group by b.deptname);
+and a.deptname = b.deptname;
+
+sam,2200.0,cs
+bron,1200.0,phy
+==============================================
+
+val deptEmployees = List(
+      ("cs",("jack",1000.0)),
+      ("cs",("bron",1200.0)),
+      ("phy",("sam",2200.0)),
+      ("phy",("ronaldo",500.0))
+    )
+  val employeeRDD = sc.makeRDD(deptEmployees)
+
+val maxByDept = employeeRDD.foldByKey(("Dummy",0.0))     ((bnchmrk,element2)=> if (bnchmrk._2 > element2._2) bnchmrk else element2)
+  
+  println("maximum salaries in each dept" + maxByDept.collect().toList)
+
+
+=================
+=======lookup============
+val lookuprdd = sc.parallelize(Array("HDP","SQP","HVE","HBASE","HDP","SQP","HBASE","HDP","SQP","HVE")).map(word => (word,1))
+
+val lookupresult = lookuprdd.lookup("HVE")
+=========================
+
+=========mapvalues=======
+val mapValuesrdd = sc.parallelize(Array("HDP","SQP","HVE","HBASE","HDP","SQP","HBASE","HDP","SQP","HVE")).map(word => (word,1))
+mapValuesrdd.collect() -> this will give you the initial result of mapped key value
+mapValuesrdd.mapValues(v => v*3).collect() -> Each value will be multiplied by 3
+=========================
+
+=========collectsAsMap======= -> Provides concrete MAP from an RDD
+val collectAsMapRDD = sc.parallelize(Array("HDP","SQP","HVE","HBASE","HDP","SQP","HBASE","HDP","SQP","HVE")).map(k => (k,1)).reduceByKey(_ + _).collectAsMap()
+=============================
+
+=====flatmapvalues==========
+step1: Firstly, lets understand what is map in scala
+-> val scalamap = List("Vivek","vinod","sakshi","anuradha","div").map(_.toUpper)
+
+step2: Apply flatten to the result
+-> scalamap.flatten => flatten converts a sequence of strings into a sequnce of characters seq[chars]
+
+step3: run flatmap, this is basically = map + flatten
+-> val scalamap = List("Vivek","vinod","sakshi","anuradha","div").flatMap(_.toUpperCase)
+
+step4: flatMapValues, is to apply a flatMap on all values of an RDD which is in the form of (K,V) similar to mapValues however, in flatMapValues the resulting sequence is then flattend
+-> val flatMapValuesRDD = sc.parallelize(List("Vivek","vinod","sakshi","anuradha","div")).map(k => (k,1))
+-> flatMapValuesRDD.collect()
+-> 
+-> val flatMapValuesResult = flatMapValuesRDD.flatMapValues(x => "NewVal").collect()
+
+-> flatmap: sc.parallelize(List("Vivek","vinod","sakshi","anuradha","div")).flatMap(x => x*2).collect()
+========================
+
+============mean()================
+val meanRDD = sc.parallelize(Array(1,2,3,4,678,98,9,9,9)).mean()
+val meanRDD = sc.parallelize((1 to 50000)).mean()
+============================
+
+============sum()================
+val sumRDD = sc.parallelize(List(1,2,3,4,678,98,9,9,9)).sum()
+above is provide the same result as fold function as below:
+val sumRDD = sc.parallelize(List(1,2,3,4,678,98,9,9,9)).fold(0){(acc,element) => acc + element}
+=================================
+
+=============variance()===========
+val varianceRDD = sc.parallelize(List(1,2,3,4,678,98,9,9,9)).variance()
+variance = sumof (xi - mean)^2/number of elements
+
+val varianceRDD = sc.parallelize((1 to 5)).variance()
+
+above is equalto
+(Math.pow((1-3),2)/5 + Math.pow((2-3),2)/5 + Math.pow((3-3),2)/5 + Math.pow((4-3),2)/5 + Math.pow((5-3),2)/5) which is equal to 2 
+==================================
+
+===========stats()============
+val statsRDD = sc.parallelize((1 to 5)).stats()
+standard deviation is the square root of the variance
+===============================
+

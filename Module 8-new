@@ -1,0 +1,60 @@
+Setting up Kafka Single Broker Cluster:
+
+Step1: Move to the Kafka directory and start the zookeeper server
+Command: bin/zookeeper-server-start.sh config/zookeeper.properties
+
+Step2: Start the Kafka server
+Command: bin/kafka-server-start.sh config/server.properties
+
+Step3: Create Kafka Topic
+Command: bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic kafka_topic
+
+Step4: List Topics
+Command: bin/kafka-topics.sh --list --zookeeper localhost:2181
+
+Step5: Run Kafka Producer
+Command: bin/kafka-console-producer.sh --broker-list localhost:9092 --topic kafka_topic
+
+Step6: Run Kafka Consumer
+Command: bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic kafka_topic --from-beginning
+
+Step7: Send message from Producer to Consumer
+
+Setting up Kafka Single Node Multi-Broker Cluster:
+Step1: Move to the Kafka directory and start the zookeeper server
+Command: bin/zookeeper-server-start.sh config/zookeeper.properties
+
+Step2: For setting up multiple brokers on a single node, separate server property files are
+required for each broker.
+Each property file will define different values for the following properties: broker.id, port, log.dir
+
+Steps:
+➢ Go to Kafka directory
+➢ Open config folder
+➢ Make two separate server property files in config folder
+➢ Make changes in the files created as shown below
+
+Step3: Run Broker1
+Command: bin/kafka-server-start.sh config/server.properties
+
+Step4: Run Broker2
+Command: bin/kafka-server-start.sh config/server1.properties
+
+Step5: Create Kafka Topic (this should be already running)
+
+bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic kafka_topic1
+ 
+Step6: List Kafka Topic
+ bin/kafka-topics.sh --list --zookeeper localhost:2181
+
+Step7: Run Kafka Producer
+ bin/kafka-console-producer.sh --broker-list localhost:9092, localhost:9093 --topic kafka_topic1
+
+Step8: Run Kafka Consumer
+ Command: bin/kafka-console-consumer.sh --zookeeper localhost:2181 --from-beginning --topic kafka_topic1
+ 
+Step9: Send message from producer to consumer
+
+bin/kafka-server-stop.sh
+bin/zookeeper-server-stop.sh
+

@@ -1,0 +1,57 @@
+1) Sudo JPS 
+2) hadoop version                               => hadoop version
+3) hdfs fsck /                                  => hadoop health check
+4) hdfs dfs -ls /                               => list of files and directories in hdfs
+5) hadoop fs -put /home/edureka/test /user      => copy local file into hdfs
+6) hdfs dfs -ls /                               => list of files and directories in hdfs
+7) hadoop fs -rm -R /user/test                  => delete folder from hdfs
+8) hdfs dfs -help                               => Invoke hdfs help for available list of commands
+
+List of all configuration files in hadoop:
+
+10) cd /usr/lib/hadoop-2.8.1/etc/hadoop
+11) various lookups:
+	- localhost:50070 ==> HDFS Web Ui
+        - localhost:50075 ==> Data node webui to access the status\logs
+ 	- localhost:8088  ==> Web UI for Resource Manager for app submissions
+        - localhost:8042  ==> Node info, list of applications and containers
+	- localhost:19888 ==> Get status of finished applications and associated profiling metrics 
+
+SQOOP:
+-----
+12) sqoop help                                  => To know various sqoop options 
+13) Login to mysql server:
+	- mysql -u root -p <enter>
+	- enter password Edurekasql_123
+
+14) use userdb;
+15) create table userdb.emp (id Int(50), Name varchar(50), Salary double, Department varchar(50), Designation varchar(50));
+16) show create table emp;
+17) Insert below rows in the table:
+insert into emp values (101,"Allan Murphy",50000.00,"Finance","Accountant");
+insert into emp values (102,"Donal Prasad",70000.00,"Finance","CA");
+insert into emp values (103,"Carol Sanghvi",80000.00,"Technology","Hardware Operator");
+insert into emp values (104,"Nolan Dengius", 75000.00,"Technology","System Analyst");
+18) run below command:
+
+sqoop import --connect jdbc:mysql://localhost/userdb --username root --password Edurekasql_123 --table emp -m 1 --target-dir '/sqoop_sql/';
+
+To run with multiple mappers using a split-by key
+================================================
+sqoop import --connect jdbc:mysql://localhost/userdb --username root --password Edurekasql_123 --table emp --split-by id -m 2 --target-dir '/sqoop_sql/';
+
+19) goto localhost:50070 and click on browse the file system
+20) click on sqoop_sql dir, and click on part-m0001, and download and open the file
+22) Go to mysql and delte emp table and not truncate;
+delete from emp;
+select * from emp;
+
+21) Export data from sqoop into rdbms
+sqoop export --connect jdbc:mysql://localhost/userdb --username root --password Edurekasql_123 --table emp -m 1 --export-dir '/sqoop_sql/part-m-00000';
+
+22) goto mysql, run select * on emp, and post that drop the table.
+drop table emp;
+
+
+
+

@@ -1,0 +1,49 @@
+
+Flume Commands:
+Go to bin directory of Flume
+Command: ./flume-ng
+
+Starting Flume Agent:
+Given the configuration file, we can start Flume using the following command:
+goto $FLUME_HOME/conf and run below command
+Command: flume-ng agent --conf conf --conf-file flume.conf --name a1 -Dflume.root.logger=INFO,console
+
+From a separate terminal, we can then telnet port 44444 and send Flume an event:
+Command: telnet localhost 44444
+
+Flume Integration with Kafka
+Using Kafka as a source for Flume
+Steps:
+▪ Start Zookeeper Server
+▪ Start Kafka Server
+▪ Create a topic ‘demo’
+▪ Setup Flume configuration file
+▪ Start Flume-agent
+▪ Run Kafka Producer
+▪ Send message from Kafka Producer
+▪ Check output in HDFS
+
+Step1: Start Zookeeper Server
+Command: bin/zookeeper-server-start.sh config/zookeeper.properties
+
+Step2: Start Kafka Server
+Command: bin/kafka-server-start.sh config/server.properties
+
+Step3: Create Kafka Topic
+Command: bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic demo
+
+Step4: List Topic
+Command: bin/kafka-topics.sh --list --zookeeper localhost:2181
+
+Step5: Setup Flume Configuration File
+
+Step6: Start Flume Agent
+Command: flume-ng agent --conf conf --conf-file flumeexercise.conf -name a1 -Dflume.root.logger=INFO,console
+
+Step7: Run Kafka Producer
+Command: bin/kafka-console-producer.sh --broker-list localhost:9092 --topic demo
+
+Step8: Send Message from Kafka Producer
+
+Step9: Check Result in HDFS
+

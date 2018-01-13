@@ -1,0 +1,179 @@
+On Spark Shell
+--------------
+Commands
+// SQLContext
+val sqlContext = new org.apache.spark.sql.SQLContext(sc)
+
+// Reading File Usng SQL Context
+val peoplejsondf = sqlContext.read.json("file:///home/edureka/SampleFiles/people.json")
+peoplejsondf.show()
+
+// Creating DataFrame
+val df = spark.read.json("file:///home/edureka/SampleFiles/people.json")
+df.show()
+df.printSchema()
+df.select("name").show()
+df.select($"name", $"age" + 1).show()
+df.filter($"age" > 21).show()
+df.groupBy("dept").max("age").show()
+df.groupBy("dept").min("age").show()
+
+// Running SQL Queries Programmatically
+peoplejsondf.createOrReplaceTempView("people")
+val peopledf = spark.sql("SELECT * FROM people")
+peopledf.show()
+
+// Creating Dataset - Case Class & Dataset
+case class Employee(name: String, age: Long)
+val caseClassDS = Seq(Employee("Andy", 32)).toDS()
+caseClassDS.show()
+val primitiveDS = Seq(1, 2, 3).toDS()
+primitiveDS.map(_ + 1).collect()
+
+
+// Creating Dataset - Reading File
+val path = "file:///home/edureka/SampleFiles/emp.json"
+case class Emp(name: String, age: Long,salary:Double)
+val employeeDS = spark.read.json(path).as[Emp]
+or
+val employeeDS =sqlContext.read.json(path).as[Emp]
+employeeDS.show()
+========================================================================================================================
+// Inferring the Schema Using Reflection
+// Adding Schema to RDDs - Initialization
+import org.apache.spark.sql.catalyst.encoders.ExpressionEncoder;
+import org.apache.spark.sql.Encoder;
+import spark.implicits._;
+
+val employeeDF = spark.sparkContext.textFile("file:///home/edureka/SampleFiles/employee.txt").map(_.split(",")).map(attributes => Employee(attributes(0), attributes(1).trim.toInt)).toDF()
+
+employeeDF.createOrReplaceTempView("employee")
+
+val youngstersDF = spark.sql("SELECT name, age FROM employee WHERE age BETWEEN 18 AND 21")
+
+youngstersDF.map(youngster => "Name: " + youngster(0)).show()
+
+// Adding Schema to RDDs - Transformation
+youngstersDF.map(youngster => "Name: " + youngster.getAs[String]("name")).show()
+implicit val mapEncoder = org.apache.spark.sql.Encoders.kryo[Map[String, Any]]
+youngstersDF.map(youngster => youngster.getValuesMap[Any](List("name", "age"))).collect()
+
+// Programmatically Specifying the Schema
+// Adding Schema - Reading File & Adding Schema
+import org.apache.spark.sql.types._
+import org.apache.spark.sql.Row
+
+val employeeRDD = spark.sparkContext.textFile("file:///home/edureka/SampleFiles/employee.txt")
+val schemaString = "name age"
+val fields = schemaString.split(" ").map(fieldName => StructField(fieldName, StringType, nullable = true))
+val schema = StructType(fields)
+
+// Adding Schema - Transformation Result
+val rowRDD = employeeRDD.map(_.split(",")).map(attributes => Row(attributes(0),attributes(1).trim))
+val employeeDF = spark.createDataFrame(rowRDD, schema)
+employeeDF.createOrReplaceTempView("employee")
+val results = spark.sql("SELECT name FROM employee")
+results.map(attributes => "Name: " + attributes(0)).show()
+
+// Stock Market Analysis
+import org.apache.spark._;
+import org.apache.spark.rdd.RDD;
+import org.apache.spark.util.IntParam;
+import org.apache.spark.sql.SQLContext;
+import org.apache.spark.sql.functions._;
+import org.apache.spark.sql.types._;
+import org.apache.spark.sql._;
+import org.apache.spark.mllib.stat.Statistics;
+import org.apache.spark.sql.SparkSession;
+val spark = SparkSession.builder().appName("Spark SQL basic example").config("spark.some.config.option", "some-value").getOrCreate()
+
+import sqlContext.implicits._;
+import spark._;
+=======import sqlContext._;================
+
+// Creating Case Class
+case class Stock(dt: String, openprice: Double, highprice: Double, lowprice: Double, closeprice:Double, volume: Double, adjcloseprice: Double)
+ 
+def parseStock(str: String): Stock = {
+ val line = str.split(",") 
+ Stock(line(0), line(1).toDouble, line(2).toDouble, line(3).toDouble, line(4).toDouble,line(5).toDouble,line(6).toDouble)
+}
+
+def parseRDD(rdd: RDD[String]): RDD[Stock] = {
+ val header = rdd.first
+ rdd.filter(_(0) != header(0)).map(parseStock).cache()
+}
+
+val stocksAAONDF = parseRDD(sc.textFile("file:///home/edureka/SampleFiles/stock/AAON.csv")).toDF.cache()
+// Display Data Frame
+stocksAAONDF.show()
+
+// Average monthly closing
+stocksAAONDF.select(year($"dt").alias("yr"), month($"dt").alias("mo"), $"adjcloseprice").groupBy("yr","mo").avg("adjcloseprice").orderBy(desc("yr"),desc("mo")).show
+
+//Steep change in graph
+val stocksMSFTDF = parseRDD(sc.textFile("file:///home/edureka/SampleFiles/stock/MSFT.csv")).toDF.cache()
+stocksMSFTDF.show()
+
+stocksMSFTDF.createOrReplaceTempView("stocksMSFTDF")
+
+var res = spark.sql("SELECT stocksMSFTDF.dt, stocksMSFTDF.openprice, stocksMSFTDF.closeprice,abs(stocksMSFTDF.closeprice -stocksMSFTDF.openprice) as MSFTdiff FROM stocksMSFTDF WHERE abs(stocksMSFTDF.closeprice - stocksMSFTDF.openprice) > 2 ")
+res.show
+
+// Join AAON, ABAX & FAST Stock
+val stocksAAONDF = parseRDD(sc.textFile("file:///home/edureka/SampleFiles/stock/AAON.csv")).toDF.cache()
+stocksAAONDF.show()
+stocksAAONDF.createOrReplaceTempView("stocksAAON")
+
+val stocksABAXDF = parseRDD(sc.textFile("file:///home/edureka/SampleFiles/stock/ABAX.csv")).toDF.cache()
+stocksABAXDF.show()
+stocksABAXDF.createOrReplaceTempView("stocksABAX")
+
+val stocksFASTDF = parseRDD(sc.textFile("file:///home/edureka/SampleFiles/stock/FAST.csv")).toDF.cache()
+stocksFASTDF.show()
+stocksFASTDF.createOrReplaceTempView("stocksFAST")
+
+val joinclose=spark.sql("SELECT stocksAAON.dt, stocksAAON.adjcloseprice as AAONclose,stocksABAX.adjcloseprice as ABAXclose, stocksFAST.adjcloseprice as FASTclose from stocksAAON join stocksABAX on stocksAAON.dt = stocksABAX.dt join stocksFAST on stocksAAON.dt = stocksFAST.dt").cache
+
+joinclose.show
+
+// Storing joinclose as Parquet
+local:==> joinclose.write.format("parquet").save("file:///home/edureka/SampleFiles/stock/joinstock.parquet")
+hdfs:==> joinclose.write.format("parquet").save("/user/edureka/tmp/joinstock.parquet")
+val df = spark.read.parquet("file:///home/edureka/SampleFiles/stock/joinstock.parquet")
+df.show()
+joinclose.createOrReplaceTempView("joinclose")
+
+// Average Closing per Year
+val newTable = sqlContext.sql("SELECT year(joinclose.dt) as year, avg(joinclose.AAONClose) as AAON, avg(joinclose.ABAXClose) as ABAX, avg(joinclose.FASTClose) as FAST from joinclose group By year(joinclose.dt) order by year(joinclose.dt)").cache
+newTable.show
+
+newTable.registerTempTable("newTable")
+
+// Transformation
+val CompanyAll = sqlContext.sql("select year, AAON Value, 'AAON' Company from newTable
+union all select year, ABAX Value, 'ABAX' Company from newTable union all select year, FAST
+Value, 'FAST' Company from newTable").cache
+CompanyAll.show
+CompanyAll.registerTempTable("CompanyAll")
+
+// Best of Average Closing
+val BestCompanyYear = sqlContext.sql("SELECT year, GREATEST((AAON), (ABAX), (FAST)) as BestCompany FROM newTable").cache
+BestCompanyYear.show
+BestCompanyYear.registerTempTable("BestCompanyYear")
+
+// Best Performing Company per Year
+val FinalTable = sqlContext.sql("SELECT CompanyAll.year, BestCompanyYear.BestCompany, CompanyAll.Company FROM BestCompanyYear LEFT JOIN
+CompanyAll.Value=BestCompanyYear.BestCompany ORDER BY CompanyAll.year").cache
+FinalTable.show
+FinalTable.registerTempTable("FinalTable")
+
+// Correlation
+val series1 = df.select( $"AAONClose").map{row:ROW => row.getAs[Double]("AAONClose")}.rdd
+val series2 = df.select( $"ABAXClose").map{row:ROW => row.getAs[Double]("ABAXClose")}.rdd
+val correlation = Statistics.corr(series1, series2, "pearson")
+
+
+
+
+
