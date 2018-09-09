@@ -1,0 +1,14 @@
+APplication talks to RM
+RM acks the request and provides a tracking url
+
+RM starts Applicagtion Master (AM) in one of the available hadoop data nodes
+
+AM negotiates for resources with yarn on behalf of application
+
+RM then releases resources
+
+AM talks to individual Node Managers to start application containers
+
+in case of spark app, containers will contain Spark Driver Deamon and executor daemons
+
+SPark driver completes, AM de-registers with RM
