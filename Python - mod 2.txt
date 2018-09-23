@@ -1,0 +1,168 @@
+TUPLES
+------
+tup1 = ('Python',"Scala",'''Java''')
+len(tup1)
+max(tup1)
+min(tup1)
+
+tup=(12,22,31,4,5)
+sorted(tup) 
+print(tup[::-1]) --> Reverse
+print(tup*2) --> Repeat
+print('Java' in tup1)
+
+tup2=(1,2,3,4,5)
+tup3=(31,41,52,32)
+tupU = tup2+ tup3
+print(tupU)
+del(tup2)
+
+tupU[0]
+Updating Tuples: 
+tupU[0] = 232
+
+LISTS
+-----
+list= [1,2,'Python',"Scala"]
+# updating lists
+list[2] = 34
+#updating tuples
+tupnew = (1,2,3,4,"Python")
+tupnew[0] = 34
+
+A list inside a tuple allows updates:
+
+tupl = ([1,2,3,4],[11,22,33,44])
+tupl[0]
+tupl[0][0] = 45
+
+slicing:
+tupl[0][0:2]
+
+converting tuples to list:
+
+tuple1 = (1,2,3,4,5,6)
+list(tuple1)
+ls=list(tuple1)
+ls[0] = 45
+tuple2 = tuple(ls)
+
+#Slide 70 - Mutable Data Types
+list = ["Python",'JAVA','SCALA']
+list[-1] --> last element
+list [2]
+list [-2]
+list[0:2]
+del(ls)
+lk = [1,2,3,4,'asd','c',"Scala"]
+lk = [1,2,3,4,'asd','c',"Scala"]
+lk.pop(2)
+lk.remove('asd')
+type(lk)
+print([x**2 for x in [1,2,3,4,5,6,7,8]]) --> squares of nums in a list
+lk.append("Machine Learning")
+lk.extend(['g','h'])
+lk.insert(1,"Kljs")
+sorted(lk)
+lk[::-1]
+
+Tuple inside a List:
+lst = [(1,2,3,4),("asd",'oow',11,22,33,44)]
+lst[0]
+lst[0][0]
+lst[0][0] = 76 --> Not allowed as its tuple
+
+dictionary:
+----------
+dict = {'P':"Python",'S':"SCALA"}
+dict['P']
+dict['S'] = 'SWIFT'
+dict
+del(dict['P'])
+len(dict)
+str(dict)
+type(dict)
+
+get func:
+
+rec = {'name':{'first':'Bob','last':'Sanner'},'jobs':['dev','mgr'],'age':34}
+rec.get('jobs')
+rec.items()
+rec.keys()
+rec.values()
+rec.setdefault('zame','lame')
+rec1 = rec.copy()
+rec1.clear()
+sorted(rec.keys())
+
+for key in rec:
+    print(key,'=>',rec[key])
+    print(len(rec))	
+
+Sets:
+set1 = set("Hello, its a Sunny Day")
+
+Slide 101 to 104
+Slide 107 to 108
+
+Conditional Operators:
+---------------------
+X = 10
+Y = 20
+
+if (X < Y):
+    print("X is less than Y")
+elif (X > Y):
+    print("X is greater than Y")
+else:
+    print("X is equal to Y")
+
+While:
+count = 0
+while(count < 5):
+  print(count)
+  count += 1
+  print("It's a Working Day")
+
+For Loop:
+for i in range(len(fruits)):
+    print(fruits[i])
+
+count=1
+for i in range(10):
+     print(str(i)*(i))
+     for j in range(0,i):
+         count+=1
+print(count)
+ 
+Loop Control Statements:
+for i in range(10,50):
+    print(i)
+    if (i == 30):
+        break
+
+for j in range(1,11):
+    print(j)
+    if (j==5):
+        continue
+
+for k in range(1,5):
+    pass
+    print(k)
+
+print("Loop ends here")
+
+Taking input from the user:
+str= input("Please enter the input: ")
+print("Received input is: ",str)
+
+slides 131 to 133
+Read\Write with files:
+file_object=open(file_name,'w+')
+file_object=open(file_name,'a+')
+
+write: 
+file_object.write("How are you doing today \n")
+
+
+
